@@ -1,4 +1,4 @@
-CREATE TABLE users(
+CREATE TABLE user(
  id serial primary key auto_increment,
  username varchar(30) not null unique,
  email varchar(50) not null unique,
