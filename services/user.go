@@ -10,6 +10,7 @@ import (
 type UserServiceInterface interface {
 	CreateUser(ctx context.Context, newUser models.User) error
 	GetUserById(ctx context.Context, idUser int) (models.UserResponse, error)
+	GetAllUsers(ctx context.Context) ([]models.UserResponse, error)
 }
 
 type UserService struct {
@@ -62,4 +63,9 @@ func (us *UserService) GetUserById(ctx context.Context, idUser int) (models.User
 		UpdatedAt: user.UpdatedAt,
 	}
 	return userResponse, err
+}
+
+func (us *UserService) GetAllUsers(ctx context.Context) ([]models.UserResponse, error) {
+	user, err := us.userRepository.GetAllUsers(ctx)
+	return user, err
 }

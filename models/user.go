@@ -3,6 +3,7 @@ package models
 import "time"
 
 type User struct {
+	Id        int       `json:"id" db:"id"`
 	Username  string    `json:"username" db:"username"`
 	Email     string    `json:"email" db:"email"`
 	Password  string    `json:"password" db:"password"`
@@ -14,6 +15,7 @@ type User struct {
 }
 
 type UserResponse struct {
+	Id        int       `json:"id" db:"id"`
 	Username  string    `json:"username" db:"username"`
 	Email     string    `json:"email" db:"email"`
 	Gender    string    `json:"gender" db:"gender"`
