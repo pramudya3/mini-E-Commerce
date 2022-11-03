@@ -11,8 +11,10 @@ require (
 	github.com/mattn/go-isatty v0.0.14
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasttemplate v1.2.1
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
-	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f
-	golang.org/x/sys v0.0.0-20211103235746-7861aae1554b
-	golang.org/x/text v0.3.7
+	golang.org/x/crypto v0.1.0
+	golang.org/x/net v0.1.0
+	golang.org/x/sys v0.1.0
+	golang.org/x/text v0.4.0
 )
+
+require golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect

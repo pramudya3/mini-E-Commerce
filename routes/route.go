@@ -8,4 +8,5 @@ import (
 
 func UserPath(e *echo.Echo, uc *controllers.UserController) {
 	e.POST("/users", uc.CreateUser)
+	e.GET("/users/:idUser", uc.GetUserById)
 }

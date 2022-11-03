@@ -9,6 +9,7 @@ import (
 
 type UserServiceInterface interface {
 	CreateUser(ctx context.Context, newUser models.User) error
+	GetUserById(ctx context.Context, idUser int) (models.UserResponse, error)
 }
 
 type UserService struct {
@@ -28,9 +29,7 @@ func (us *UserService) CreateUser(ctx context.Context, newUser models.User) erro
 	if newUser.Email == "" {
 		return errors.New("Email is required")
 	}
-	if newUser.Password == "" {
-		return errors.New("Password is required")
-	}
+
 	if newUser.Gender != "Male" {
 		if newUser.Gender != "Female" {
 			return errors.New("Gender is only Male and Female")
@@ -42,7 +41,25 @@ func (us *UserService) CreateUser(ctx context.Context, newUser models.User) erro
 	if newUser.Address == "" {
 		return errors.New("Address is required")
 	}
+	if newUser.Password == "" {
+		return errors.New("Password is required")
+	}
 
 	err := us.userRepository.CreateUser(ctx, newUser)
 	return err
+}
+
+func (us *UserService) GetUserById(ctx context.Context, idUser int) (models.UserResponse, error) {
+	user, err := us.userRepository.GetUserById(ctx, idUser)
+
+	userResponse := models.UserResponse{
+		Username:  user.Username,
+		Email:     user.Email,
+		Gender:    user.Gender,
+		Age:       user.Age,
+		Address:   user.Address,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+	return userResponse, err
 }
