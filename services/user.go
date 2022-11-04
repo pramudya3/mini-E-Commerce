@@ -99,9 +99,14 @@ func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UserUpd
 	if updateUser.Password != "" {
 		getUser.Password = updateUser.Password
 	}
-	if updateUser.Gender != "" {
+	if updateUser.Gender != "Male" {
+		if updateUser.Gender != "Female" {
+			return models.UserUpdateResponse{}, errors.New("Gender is only Male and Female")
+		}
 		getUser.Gender = updateUser.Gender
 	}
+	getUser.Gender = updateUser.Gender
+
 	if updateUser.Age != 0 {
 		getUser.Age = updateUser.Age
 	}

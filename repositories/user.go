@@ -29,10 +29,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 func (ur *UserRepository) CreateUser(ctx context.Context, newUser models.User) error {
 	query := "INSERT INTO users(username, email, password, gender, age, address, created_at, updated_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
 
-	loc, _ := time.LoadLocation("Asia/Jakarta")
-	now := time.Now().In(loc)
-
-	_, err := ur.mysql.ExecContext(ctx, query, newUser.Username, newUser.Email, newUser.Password, newUser.Gender, newUser.Age, newUser.Address, now, now)
+	_, err := ur.mysql.ExecContext(ctx, query, newUser.Username, newUser.Email, newUser.Password, newUser.Gender, newUser.Age, newUser.Address, time.Now(), time.Now())
 	if err != nil {
 		return err
 	}
