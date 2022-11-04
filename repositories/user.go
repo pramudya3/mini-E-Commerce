@@ -12,7 +12,7 @@ type UserRepositoryInterface interface {
 	CreateUser(ctx context.Context, newUser models.User) error
 	GetUserById(ctx context.Context, idUser int) (models.User, error)
 	GetAllUsers(ctx context.Context) ([]models.UserResponse, error)
-	// DeleteUser(ctx context.Context, idToken int) error
+	DeleteUser(ctx context.Context, idUser int) error
 	// UpdateUser(ctx context.Context, updateUser models.UserUpdate) (models.UserUpdateResponse, error)
 }
 
@@ -72,4 +72,18 @@ func (ur *UserRepository) GetAllUsers(ctx context.Context) ([]models.UserRespons
 		users = append(users, user)
 	}
 	return users, nil
+}
+
+func (ur *UserRepository) DeleteUser(ctx context.Context, idUser int) error {
+	query := "DELETE FROM users WHERE id = ?"
+
+	result, err := ur.mysql.ExecContext(ctx, query, idUser)
+	if err != nil {
+		return nil
+	}
+	affected, _ := result.RowsAffected()
+	if affected == 0 {
+		return errors.New("data not found")
+	}
+	return nil
 }

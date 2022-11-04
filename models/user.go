@@ -40,5 +40,6 @@ type UserUpdateResponse struct {
 	Gender    string    `json:"gender" db:"gender"`
 	Age       int       `json:"age" db:"age"`
 	Address   string    `json:"address" db:"address"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }

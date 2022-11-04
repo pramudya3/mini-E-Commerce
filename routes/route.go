@@ -10,4 +10,5 @@ func UserPath(e *echo.Echo, uc *controllers.UserController) {
 	e.POST("/users", uc.CreateUser)
 	e.GET("/users/:idUser", uc.GetUserById)
 	e.GET("/users", uc.GetAllUsers)
+	e.DELETE("/users/:idUser", uc.DeleteUser)
 }
