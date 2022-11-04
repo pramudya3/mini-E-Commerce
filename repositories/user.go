@@ -13,7 +13,7 @@ type UserRepositoryInterface interface {
 	GetUserById(ctx context.Context, idUser int) (models.User, error)
 	GetAllUsers(ctx context.Context) ([]models.UserResponse, error)
 	DeleteUser(ctx context.Context, idUser int) error
-	// UpdateUser(ctx context.Context, updateUser models.UserUpdate) (models.UserUpdateResponse, error)
+	UpdateUser(ctx context.Context, updateUser models.User, idUser int) (models.User, error)
 }
 
 type UserRepository struct {
@@ -86,4 +86,19 @@ func (ur *UserRepository) DeleteUser(ctx context.Context, idUser int) error {
 		return errors.New("data not found")
 	}
 	return nil
+}
+
+func (ur *UserRepository) UpdateUser(ctx context.Context, updateUser models.User, idUser int) (models.User, error) {
+	query := "UPDATE users SET username = ?, email = ?, password = ?, gender = ?, age = ?, address = ?, updated_at = ? WHERE id = ?"
+
+	result, err := ur.mysql.ExecContext(ctx, query, updateUser.Username, updateUser.Email, updateUser.Password, updateUser.Gender, updateUser.Age, updateUser.Address, time.Now().Local(), idUser)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	affected, _ := result.RowsAffected()
+	if affected == 0 {
+		return models.User{}, err
+	}
+	return updateUser, nil
 }

@@ -76,3 +76,24 @@ func (uc *UserController) DeleteUser(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, helpers.APIResponseSuccessWithoutData(200, "User deleted"))
 }
+
+func (uc *UserController) UpdateUser(c echo.Context) error {
+	idString := c.Param("idUser")
+	id, errToken := strconv.Atoi(idString)
+	if errToken != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(echo.ErrBadGateway.Code, "insert id_user"))
+	}
+
+	var updateUser models.UserUpdate
+	err := c.Bind(&updateUser)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, helpers.APIResponseFailed(echo.ErrBadRequest.Code, "update user failed"))
+	}
+
+	ctx := c.Request().Context()
+	user, errUpdate := uc.userService.UpdateUser(ctx, updateUser, id)
+	if errUpdate != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(echo.ErrBadGateway.Code, "update user failed"))
+	}
+	return c.JSON(http.StatusOK, helpers.APIResponseSuccess(200, "success update user", user))
+}

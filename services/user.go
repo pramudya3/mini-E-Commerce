@@ -6,6 +6,7 @@ import (
 	"e-commerce/models"
 	"e-commerce/repositories"
 	"errors"
+	"time"
 )
 
 type UserServiceInterface interface {
@@ -13,6 +14,7 @@ type UserServiceInterface interface {
 	GetUserById(ctx context.Context, idUser int) (models.UserResponse, error)
 	GetAllUsers(ctx context.Context) ([]models.UserResponse, error)
 	DeleteUser(ctx context.Context, idUser int) error
+	UpdateUser(ctx context.Context, updateUser models.UserUpdate, idUser int) (models.UserUpdateResponse, error)
 }
 
 type UserService struct {
@@ -81,4 +83,45 @@ func (us *UserService) GetAllUsers(ctx context.Context) ([]models.UserResponse, 
 func (us *UserService) DeleteUser(ctx context.Context, idUser int) error {
 	err := us.userRepository.DeleteUser(ctx, idUser)
 	return err
+}
+
+func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UserUpdate, idUser int) (models.UserUpdateResponse, error) {
+	getUser, err := us.userRepository.GetUserById(ctx, idUser)
+	if err != nil {
+		return models.UserUpdateResponse{}, err
+	}
+	if updateUser.Username == "" {
+		updateUser.Username = getUser.Username
+	}
+	if updateUser.Email == "" {
+		updateUser.Email = getUser.Email
+	}
+	if updateUser.Password == "" {
+		updateUser.Password = getUser.Password
+	}
+	if updateUser.Gender == "" {
+		updateUser.Gender = getUser.Gender
+	}
+	if updateUser.Age == 0 {
+		updateUser.Age = getUser.Age
+	}
+	if updateUser.Address == "" {
+		updateUser.Address = getUser.Address
+	}
+	if updateUser.CreatedAt == time.Now() {
+		updateUser.CreatedAt = getUser.CreatedAt
+	}
+
+	user, err := us.userRepository.UpdateUser(ctx, getUser, idUser)
+	responseUpdate := models.UserUpdateResponse{
+		Id:        getUser.Id,
+		Username:  user.Username,
+		Email:     user.Email,
+		Gender:    user.Gender,
+		Age:       user.Age,
+		Address:   user.Address,
+		CreatedAt: getUser.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+	return responseUpdate, err
 }
