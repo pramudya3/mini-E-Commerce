@@ -12,8 +12,8 @@ type UserRepositoryInterface interface {
 	CreateUser(ctx context.Context, newUser models.User) error
 	GetUserById(ctx context.Context, idUser int) (models.User, error)
 	GetAllUsers(ctx context.Context) ([]models.UserResponse, error)
-	DeleteUser(ctx context.Context, idUser int) error
-	UpdateUser(ctx context.Context, updateUser models.User, idUser int) (models.User, error)
+	DeleteUser(ctx context.Context, idToken int) error
+	UpdateUser(ctx context.Context, updateUser models.User, idToken int) (models.User, error)
 }
 
 type UserRepository struct {
@@ -74,10 +74,10 @@ func (ur *UserRepository) GetAllUsers(ctx context.Context) ([]models.UserRespons
 	return users, nil
 }
 
-func (ur *UserRepository) DeleteUser(ctx context.Context, idUser int) error {
+func (ur *UserRepository) DeleteUser(ctx context.Context, idToken int) error {
 	query := "DELETE FROM users WHERE id = ?"
 
-	result, err := ur.mysql.ExecContext(ctx, query, idUser)
+	result, err := ur.mysql.ExecContext(ctx, query, idToken)
 	if err != nil {
 		return nil
 	}
@@ -88,10 +88,10 @@ func (ur *UserRepository) DeleteUser(ctx context.Context, idUser int) error {
 	return nil
 }
 
-func (ur *UserRepository) UpdateUser(ctx context.Context, updateUser models.User, idUser int) (models.User, error) {
+func (ur *UserRepository) UpdateUser(ctx context.Context, updateUser models.User, idToken int) (models.User, error) {
 	query := "UPDATE users SET username = ?, email = ?, password = ?, gender = ?, age = ?, address = ?, updated_at = ? WHERE id = ?"
 
-	result, err := ur.mysql.ExecContext(ctx, query, updateUser.Username, updateUser.Email, updateUser.Password, updateUser.Gender, updateUser.Age, updateUser.Address, time.Now().Local(), idUser)
+	result, err := ur.mysql.ExecContext(ctx, query, updateUser.Username, updateUser.Email, updateUser.Password, updateUser.Gender, updateUser.Age, updateUser.Address, time.Now().Local(), idToken)
 	if err != nil {
 		return models.User{}, err
 	}

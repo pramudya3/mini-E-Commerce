@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"e-commerce/helpers"
+	"e-commerce/middlewares"
 	"e-commerce/models"
 	"e-commerce/services"
 	"net/http"
@@ -60,17 +61,13 @@ func (uc *UserController) GetAllUsers(c echo.Context) error {
 }
 
 func (uc *UserController) DeleteUser(c echo.Context) error {
-	// idToken, errToken := middlewares.ExtractToken(c)
-	// if errToken != nil {
-	// 	return c.JSON(http.StatusUnauthorized, helpers.APIResponseFailed(echo.ErrBadRequest.Code, "unauthorized"))
-	// }
-	idString := c.Param("idUser")
-	id, err := strconv.Atoi(idString)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(echo.ErrBadGateway.Code, "Insert id_user"))
+	idToken, errToken := middlewares.ExtractToken(c)
+	if errToken != nil {
+		return c.JSON(http.StatusUnauthorized, helpers.APIResponseFailed(echo.ErrBadRequest.Code, "unauthorized"))
 	}
+
 	ctx := c.Request().Context()
-	errDelete := uc.userService.DeleteUser(ctx, id)
+	errDelete := uc.userService.DeleteUser(ctx, idToken)
 	if errDelete != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(echo.ErrBadGateway.Code, "Token invalid"))
 	}
@@ -78,10 +75,9 @@ func (uc *UserController) DeleteUser(c echo.Context) error {
 }
 
 func (uc *UserController) UpdateUser(c echo.Context) error {
-	idString := c.Param("idUser")
-	id, errToken := strconv.Atoi(idString)
+	idToken, errToken := middlewares.ExtractToken(c)
 	if errToken != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(echo.ErrBadGateway.Code, "insert id_user"))
+		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(echo.ErrBadGateway.Code, "Token invalid"))
 	}
 
 	var updateUser models.UserUpdate
@@ -91,7 +87,7 @@ func (uc *UserController) UpdateUser(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	user, errUpdate := uc.userService.UpdateUser(ctx, updateUser, id)
+	user, errUpdate := uc.userService.UpdateUser(ctx, updateUser, idToken)
 	if errUpdate != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(echo.ErrBadGateway.Code, "update user failed"))
 	}

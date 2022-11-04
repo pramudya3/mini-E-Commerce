@@ -13,8 +13,8 @@ type UserServiceInterface interface {
 	CreateUser(ctx context.Context, newUser models.User) error
 	GetUserById(ctx context.Context, idUser int) (models.UserResponse, error)
 	GetAllUsers(ctx context.Context) ([]models.UserResponse, error)
-	DeleteUser(ctx context.Context, idUser int) error
-	UpdateUser(ctx context.Context, updateUser models.UserUpdate, idUser int) (models.UserUpdateResponse, error)
+	DeleteUser(ctx context.Context, idToken int) error
+	UpdateUser(ctx context.Context, updateUser models.UserUpdate, idToken int) (models.UserUpdateResponse, error)
 }
 
 type UserService struct {
@@ -80,39 +80,39 @@ func (us *UserService) GetAllUsers(ctx context.Context) ([]models.UserResponse, 
 	return user, err
 }
 
-func (us *UserService) DeleteUser(ctx context.Context, idUser int) error {
-	err := us.userRepository.DeleteUser(ctx, idUser)
+func (us *UserService) DeleteUser(ctx context.Context, idToken int) error {
+	err := us.userRepository.DeleteUser(ctx, idToken)
 	return err
 }
 
-func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UserUpdate, idUser int) (models.UserUpdateResponse, error) {
-	getUser, err := us.userRepository.GetUserById(ctx, idUser)
+func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UserUpdate, idToken int) (models.UserUpdateResponse, error) {
+	getUser, err := us.userRepository.GetUserById(ctx, idToken)
 	if err != nil {
 		return models.UserUpdateResponse{}, err
 	}
-	if updateUser.Username == "" {
-		updateUser.Username = getUser.Username
+	if updateUser.Username != "" {
+		getUser.Username = updateUser.Username
 	}
-	if updateUser.Email == "" {
-		updateUser.Email = getUser.Email
+	if updateUser.Email != "" {
+		getUser.Email = updateUser.Email
 	}
-	if updateUser.Password == "" {
-		updateUser.Password = getUser.Password
+	if updateUser.Password != "" {
+		getUser.Password = updateUser.Password
 	}
-	if updateUser.Gender == "" {
-		updateUser.Gender = getUser.Gender
+	if updateUser.Gender != "" {
+		getUser.Gender = updateUser.Gender
 	}
-	if updateUser.Age == 0 {
-		updateUser.Age = getUser.Age
+	if updateUser.Age != 0 {
+		getUser.Age = updateUser.Age
 	}
-	if updateUser.Address == "" {
-		updateUser.Address = getUser.Address
+	if updateUser.Address != "" {
+		getUser.Address = updateUser.Address
 	}
 	if updateUser.CreatedAt == time.Now() {
 		updateUser.CreatedAt = getUser.CreatedAt
 	}
 
-	user, err := us.userRepository.UpdateUser(ctx, getUser, idUser)
+	user, err := us.userRepository.UpdateUser(ctx, getUser, idToken)
 	responseUpdate := models.UserUpdateResponse{
 		Id:        getUser.Id,
 		Username:  user.Username,
