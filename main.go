@@ -6,7 +6,6 @@ import (
 	"e-commerce/repositories"
 	"e-commerce/routes"
 	"e-commerce/services"
-	"fmt"
 	"log"
 
 	"github.com/labstack/echo/v4"
@@ -30,8 +29,6 @@ func main() {
 	e := echo.New()
 	routes.UserPath(e, userController)
 	routes.LoginPath(e, authController)
-
-	fmt.Println("coba")
 
 	// start server
 	log.Fatal(e.Start(":1234"))
