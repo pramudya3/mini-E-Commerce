@@ -9,7 +9,7 @@ import (
 )
 
 type UserRepositoryInterface interface {
-	CreateUser(ctx context.Context, newUser models.User) error
+	CreateUser(ctx context.Context, newUser models.CreateUserRequest) error
 	GetUserById(ctx context.Context, idUser int) (models.User, error)
 	GetAllUsers(ctx context.Context) ([]models.UserResponse, error)
 	DeleteUser(ctx context.Context, idToken int) error
@@ -26,10 +26,10 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func (ur *UserRepository) CreateUser(ctx context.Context, newUser models.User) error {
-	query := "INSERT INTO users(username, email, password, gender, age, address, created_at, updated_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
+func (ur *UserRepository) CreateUser(ctx context.Context, newUser models.CreateUserRequest) error {
+	query := "INSERT INTO users(username, email, password, gender, age, address) VALUES(?, ?, ?, ?, ?, ?)"
 
-	_, err := ur.mysql.ExecContext(ctx, query, newUser.Username, newUser.Email, newUser.Password, newUser.Gender, newUser.Age, newUser.Address, time.Now(), time.Now())
+	_, err := ur.mysql.ExecContext(ctx, query, newUser.Username, newUser.Email, newUser.Password, newUser.Gender, newUser.Age, newUser.Address)
 	if err != nil {
 		return err
 	}
@@ -38,9 +38,9 @@ func (ur *UserRepository) CreateUser(ctx context.Context, newUser models.User) e
 
 func (ur *UserRepository) GetUserById(ctx context.Context, idUser int) (models.User, error) {
 	var user models.User
-	query := "SELECT id, username, email, password, gender, age, address, created_at, updated_at FROM users WHERE id = ?"
+	query := "SELECT id, username, email, password, gender, age, address, created_at FROM users WHERE id = ?"
 
-	err := ur.mysql.QueryRowContext(ctx, query, idUser).Scan(&user.Id, &user.Username, &user.Email, &user.Password, &user.Gender, &user.Age, &user.Address, &user.CreatedAt, &user.UpdatedAt)
+	err := ur.mysql.QueryRowContext(ctx, query, idUser).Scan(&user.Id, &user.Username, &user.Email, &user.Password, &user.Gender, &user.Age, &user.Address, &user.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.User{}, errors.New("Data not found")
@@ -51,7 +51,7 @@ func (ur *UserRepository) GetUserById(ctx context.Context, idUser int) (models.U
 }
 
 func (ur *UserRepository) GetAllUsers(ctx context.Context) ([]models.UserResponse, error) {
-	query := "SELECT id, username, email, gender, age, address, created_at, updated_at FROM users"
+	query := "SELECT id, username, email, gender, age, address, created_at FROM users"
 
 	rows, err := ur.mysql.QueryContext(ctx, query)
 	if err != nil {
@@ -62,7 +62,7 @@ func (ur *UserRepository) GetAllUsers(ctx context.Context) ([]models.UserRespons
 	var users []models.UserResponse
 	for rows.Next() {
 		var user models.UserResponse
-		err := rows.Scan(&user.Id, &user.Username, &user.Email, &user.Gender, &user.Age, &user.Address, &user.CreatedAt, &user.UpdatedAt)
+		err := rows.Scan(&user.Id, &user.Username, &user.Email, &user.Gender, &user.Age, &user.Address, &user.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -88,7 +88,7 @@ func (ur *UserRepository) DeleteUser(ctx context.Context, idToken int) error {
 func (ur *UserRepository) UpdateUser(ctx context.Context, updateUser models.User, idToken int) (models.User, error) {
 	query := "UPDATE users SET username = ?, email = ?, password = ?, gender = ?, age = ?, address = ?, updated_at = ? WHERE id = ?"
 
-	result, err := ur.mysql.ExecContext(ctx, query, updateUser.Username, updateUser.Email, updateUser.Password, updateUser.Gender, updateUser.Age, updateUser.Address, time.Now().Local(), idToken)
+	result, err := ur.mysql.ExecContext(ctx, query, updateUser.Username, updateUser.Email, updateUser.Password, updateUser.Gender, updateUser.Age, updateUser.Address, time.Now(), idToken)
 	if err != nil {
 		return models.User{}, err
 	}

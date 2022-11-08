@@ -10,11 +10,11 @@ import (
 )
 
 type UserServiceInterface interface {
-	CreateUser(ctx context.Context, newUser models.User) error
+	CreateUser(ctx context.Context, newUser models.CreateUserRequest) error
 	GetUserById(ctx context.Context, idUser int) (models.UserResponse, error)
 	GetAllUsers(ctx context.Context) ([]models.UserResponse, error)
 	DeleteUser(ctx context.Context, idToken int) error
-	UpdateUser(ctx context.Context, updateUser models.UserUpdate, idToken int) (models.UserUpdateResponse, error)
+	UpdateUser(ctx context.Context, updateUser models.UserUpdateRequest, idToken int) (models.UserUpdateResponse, error)
 }
 
 type UserService struct {
@@ -27,7 +27,7 @@ func NewUserService(userRepo repositories.UserRepositoryInterface) UserServiceIn
 	}
 }
 
-func (us *UserService) CreateUser(ctx context.Context, newUser models.User) error {
+func (us *UserService) CreateUser(ctx context.Context, newUser models.CreateUserRequest) error {
 	if newUser.Username == "" {
 		return errors.New("Username is required")
 	}
@@ -70,7 +70,6 @@ func (us *UserService) GetUserById(ctx context.Context, idUser int) (models.User
 		Age:       user.Age,
 		Address:   user.Address,
 		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
 	}
 	return userResponse, err
 }
@@ -85,7 +84,7 @@ func (us *UserService) DeleteUser(ctx context.Context, idToken int) error {
 	return err
 }
 
-func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UserUpdate, idToken int) (models.UserUpdateResponse, error) {
+func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UserUpdateRequest, idToken int) (models.UserUpdateResponse, error) {
 	getUser, err := us.userRepository.GetUserById(ctx, idToken)
 	if err != nil {
 		return models.UserUpdateResponse{}, err
@@ -113,9 +112,12 @@ func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UserUpd
 	if updateUser.Address != "" {
 		getUser.Address = updateUser.Address
 	}
-	if updateUser.CreatedAt == time.Now() {
-		updateUser.CreatedAt = getUser.CreatedAt
-	}
+	// layoutFormat := "2006-01-02T15:04:05"
+	// value := time.Now().Local().Format("2006-01-02T15:04:05")
+
+	// now, _ := time.Parse(layoutFormat, value)
+	now := time.Now()
+	getUser.UpdatedAt = &now
 
 	user, err := us.userRepository.UpdateUser(ctx, getUser, idToken)
 	responseUpdate := models.UserUpdateResponse{

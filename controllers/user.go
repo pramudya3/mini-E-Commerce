@@ -22,7 +22,7 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 }
 
 func (uc *UserController) CreateUser(c echo.Context) error {
-	var newUser models.User
+	var newUser models.CreateUserRequest
 	err := c.Bind(&newUser)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helpers.APIResponseFailed(echo.ErrBadRequest.Code, err.Error()))
@@ -80,7 +80,7 @@ func (uc *UserController) UpdateUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, helpers.APIResponseFailed(echo.ErrBadGateway.Code, errToken.Error()))
 	}
 
-	var updateUser models.UserUpdate
+	var updateUser models.UserUpdateRequest
 	err := c.Bind(&updateUser)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helpers.APIResponseFailed(echo.ErrBadRequest.Code, err.Error()))
