@@ -14,7 +14,7 @@ type UserServiceInterface interface {
 	GetUserById(ctx context.Context, idUser int) (models.UserResponse, error)
 	GetAllUsers(ctx context.Context) ([]models.UserResponse, error)
 	DeleteUser(ctx context.Context, idToken int) error
-	UpdateUser(ctx context.Context, updateUser models.UserUpdateRequest, idToken int) (models.UserUpdateResponse, error)
+	UpdateUser(ctx context.Context, updateUser models.UserUpdateRequest, idToken int) (models.UserResponse, error)
 }
 
 type UserService struct {
@@ -64,12 +64,14 @@ func (us *UserService) GetUserById(ctx context.Context, idUser int) (models.User
 	user, err := us.userRepository.GetUserById(ctx, idUser)
 
 	userResponse := models.UserResponse{
+		Id:        user.Id,
 		Username:  user.Username,
 		Email:     user.Email,
 		Gender:    user.Gender,
 		Age:       user.Age,
 		Address:   user.Address,
 		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}
 	return userResponse, err
 }
@@ -84,10 +86,10 @@ func (us *UserService) DeleteUser(ctx context.Context, idToken int) error {
 	return err
 }
 
-func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UserUpdateRequest, idToken int) (models.UserUpdateResponse, error) {
+func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UserUpdateRequest, idToken int) (models.UserResponse, error) {
 	getUser, err := us.userRepository.GetUserById(ctx, idToken)
 	if err != nil {
-		return models.UserUpdateResponse{}, err
+		return models.UserResponse{}, err
 	}
 	if updateUser.Username != "" {
 		getUser.Username = updateUser.Username
@@ -98,29 +100,28 @@ func (us *UserService) UpdateUser(ctx context.Context, updateUser models.UserUpd
 	if updateUser.Password != "" {
 		getUser.Password = updateUser.Password
 	}
-	if updateUser.Gender != "Male" {
-		if updateUser.Gender != "Female" {
-			return models.UserUpdateResponse{}, errors.New("Gender is only Male and Female")
+	if updateUser.Gender != "" {
+		if updateUser.Gender != "Male" {
+			if updateUser.Gender != "Female" {
+				return models.UserResponse{}, errors.New("Update gender is only Male and Female")
+			}
 		}
 		getUser.Gender = updateUser.Gender
 	}
-	getUser.Gender = updateUser.Gender
-
 	if updateUser.Age != 0 {
 		getUser.Age = updateUser.Age
 	}
 	if updateUser.Address != "" {
 		getUser.Address = updateUser.Address
 	}
-	// layoutFormat := "2006-01-02T15:04:05"
-	// value := time.Now().Local().Format("2006-01-02T15:04:05")
 
-	// now, _ := time.Parse(layoutFormat, value)
-	now := time.Now()
+	layoutFormat := "2006-01-02T15:04:05"
+	value := time.Now().Local().Format(layoutFormat)
+	now, _ := time.Parse(layoutFormat, value)
 	getUser.UpdatedAt = &now
 
 	user, err := us.userRepository.UpdateUser(ctx, getUser, idToken)
-	responseUpdate := models.UserUpdateResponse{
+	responseUpdate := models.UserResponse{
 		Id:        getUser.Id,
 		Username:  user.Username,
 		Email:     user.Email,
