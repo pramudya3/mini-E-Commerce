@@ -42,7 +42,7 @@ func (ur *UserRepository) GetUserById(ctx context.Context, idUser int) (models.U
 	err := ur.mysql.QueryRowContext(ctx, query, idUser).Scan(&user.Id, &user.Username, &user.Email, &user.Password, &user.Gender, &user.Age, &user.Address, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return models.User{}, errors.New("Data not found")
+			return models.User{}, errors.New("data not found")
 		}
 		return models.User{}, err
 	}

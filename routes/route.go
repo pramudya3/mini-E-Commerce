@@ -18,3 +18,11 @@ func UserPath(e *echo.Echo, uc *controllers.UserController) {
 func LoginPath(e *echo.Echo, ac *controllers.AuthController) {
 	e.POST("/login", ac.Login)
 }
+
+func CategoryPath(e *echo.Echo, cc *controllers.CategoryController) {
+	e.POST("/categories", cc.CreateCategory, middlewares.JWTMiddleware())
+	e.GET("/categories", cc.GetCategory)
+	e.GET("/categories/:id", cc.GetCategoryById)
+	e.DELETE("/categories/:id", cc.DeleteCategory, middlewares.JWTMiddleware())
+	e.PUT("/categories/:id", cc.UpdateCategory, middlewares.JWTMiddleware())
+}

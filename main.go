@@ -27,10 +27,16 @@ func main() {
 	authService := services.NewAuthService(loginRepository)
 	authController := controllers.NewAuthController(authService)
 
+	// category
+	catRepository := repositories.NewCategoryRepository(db)
+	catService := services.NewCategoryService(catRepository)
+	catController := controllers.NewCategoryController(catService)
+
 	// route
 	e := echo.New()
 	routes.UserPath(e, userController)
 	routes.LoginPath(e, authController)
+	routes.CategoryPath(e, catController)
 
 	fmt.Println(time.Now())
 
