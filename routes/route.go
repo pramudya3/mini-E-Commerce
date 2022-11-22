@@ -26,3 +26,11 @@ func CategoryPath(e *echo.Echo, cc *controllers.CategoryController) {
 	e.DELETE("/categories/:id", cc.DeleteCategory, middlewares.JWTMiddleware())
 	e.PUT("/categories/:id", cc.UpdateCategory, middlewares.JWTMiddleware())
 }
+
+func ProductPath(e *echo.Echo, pc *controllers.ProductController) {
+	e.POST("/products", pc.NewProduct, middlewares.JWTMiddleware())
+	e.GET("/products/:id", pc.GetProductById)
+	e.GET("/products", pc.GetAllProducts)
+	e.DELETE("/products/:id", pc.DeleteProduct, middlewares.JWTMiddleware())
+	e.PUT("/products/:id", pc.UpdateProduct, middlewares.JWTMiddleware())
+}

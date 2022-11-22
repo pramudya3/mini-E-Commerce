@@ -6,9 +6,7 @@ import (
 	"e-commerce/repositories"
 	"e-commerce/routes"
 	"e-commerce/services"
-	"fmt"
 	"log"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -32,13 +30,16 @@ func main() {
 	catService := services.NewCategoryService(catRepository)
 	catController := controllers.NewCategoryController(catService)
 
+	productRepo := repositories.NewProductRepository(db)
+	productService := services.NewProductService(productRepo)
+	productCtrl := controllers.NewProductController(productService)
+
 	// route
 	e := echo.New()
 	routes.UserPath(e, userController)
 	routes.LoginPath(e, authController)
 	routes.CategoryPath(e, catController)
-
-	fmt.Println(time.Now())
+	routes.ProductPath(e, productCtrl)
 
 	// start server
 	log.Fatal(e.Start(":1234"))

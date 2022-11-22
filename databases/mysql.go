@@ -7,7 +7,7 @@ import (
 )
 
 func GetCoonectMysql() *sql.DB {
-	db, err := sql.Open("mysql", "adnan:adnan@tcp(localhost:3306)/e_commerce?parseTime=true")
+	db, err := sql.Open("mysql", "lemper:lemper@tcp(localhost:3306)/ecommerce?parseTime=true")
 	if err != nil {
 		panic(err)
 	}
